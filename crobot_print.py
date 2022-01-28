@@ -67,11 +67,4 @@ def get_open_orders_text(crypto = None, base = None):
             output = output + SIDE_SELL + "\n"
         for price, quantity in sorted(sell_open_orders.items()):
             output = output + str(quantity) + " " + crypto + " @ " + str(price) + " " + base + "\n"
-
-#    if open_orders and open_orders["result"] and len(open_orders["result"]["order_list"])>0:
-#        output = "You have " + amount_format(open_orders["result"]["count"]) + " open orders:\n"
-#        for order in open_orders["result"]["order_list"]:
-#            output = output + order["side"] + " " + amount_format(order["quantity"]) + " " + crypto + " @ " + amount_format(order["price"]) + " " + base + "\n"
-#    else:
-#        output = "You have no open orders"
     return output[:MAX_MESSAGE_LENGTH]
