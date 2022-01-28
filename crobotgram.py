@@ -1,6 +1,7 @@
-import json
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from crobot import *
+from croutils import get_settings
+from crobot_print import get_account_summary_text, get_balance_text, get_open_orders_text
+from crobot import get_trading_engine_status_text, start_trading_engine, stop_trading_engine
 
 BOT_TOKEN_KEY = 'TelegramBotToken'
 BOT_USERS_KEY = "Users"
@@ -18,28 +19,26 @@ def genericHandler(update, context, function, client=None, settings=None):
             output = function()
         context.bot.send_message(chat_id=update.effective_chat.id, text=output)
 
-def getStartMessage():
-    return "Welcome to Belfort! Use /help to retrieve the command list"
+def get_start_message():
+    return "Welcome to crobot! Use /help to retrieve the command list"
 
-def getHelpMessage():
+def get_help_message():
     return "Here's the command list:\n" \
         "/wallet to display your wallets\n" \
         "/orders to display your open orders\n" \
         "/balance to print your current balance\n" \
-        "/fills to print your active fills\n" \
-        "/sellFills to sell the active fills\n" \
         "/status to check the trading engine status\n" \
         "/startEngine to start the trading engine\n" \
         "/stopEngine to stop the trading engine\n"
 
-def getUnknownMessage():
+def get_unknown_message():
     return "Sorry, I didn't understand that command."
 
 def start(update, context):
-    genericHandler(update,context,getStartMessage)
+    genericHandler(update,context, get_start_message)
 
 def displayHelp(update, context):
-    genericHandler(update, context, getHelpMessage)
+    genericHandler(update, context, get_help_message)
 
 def displayWallet(update, context):
     genericHandler(update, context, get_account_summary_text)
@@ -47,14 +46,23 @@ def displayWallet(update, context):
 def displayBalance(update, context):
     genericHandler(update, context, get_balance_text)
 
+def displayOrders(update, context):
+    genericHandler(update, context, get_open_orders_text)
+
+def startEngine(update, context):
+    genericHandler(update, context, start_trading_engine)
+
+def stopEngine(update, context):
+    genericHandler(update, context, stop_trading_engine)
+
 def status(update, context):
     genericHandler(update, context, get_trading_engine_status_text)
 
 def unknown(update, context):
-    genericHandler(update, context, getUnknownMessage)
+    genericHandler(update, context, get_unknown_message)
 
 
-credentials = get_json_data(SETTINGS_FILE)
+credentials = get_settings()
 tokenData = credentials[BOT_TOKEN_KEY]
 users = credentials[BOT_USERS_KEY]
 print("Authorized users are: " + str(users))
@@ -63,23 +71,19 @@ dispatcher = updater.dispatcher
 start_handler = CommandHandler('start', start)
 displayCommand_handler = CommandHandler('help', displayHelp)
 displayWallet_handler = CommandHandler('wallet', displayWallet)
-#displayOrders_handler = CommandHandler('orders', displayOrders)
+displayOrders_handler = CommandHandler('orders', displayOrders)
 displayBalance_handler = CommandHandler('balance', displayBalance)
-#displayFills_handler = CommandHandler('fills', displayFills)
-#sellFills_handler = CommandHandler('sellFills', sellFills)
-#startEngine_handler = CommandHandler('startEngine', startEngine)
-#stopEngine_handler = CommandHandler('stopEngine', stopEngine)
+startEngine_handler = CommandHandler('startEngine', startEngine)
+stopEngine_handler = CommandHandler('stopEngine', stopEngine)
 status_handler = CommandHandler('status', status)
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(displayCommand_handler)
 dispatcher.add_handler(displayWallet_handler)
-#dispatcher.add_handler(displayOrders_handler)
+dispatcher.add_handler(displayOrders_handler)
 dispatcher.add_handler(displayBalance_handler)
-#dispatcher.add_handler(displayFills_handler)
-#dispatcher.add_handler(sellFills_handler)
-#dispatcher.add_handler(startEngine_handler)
-#dispatcher.add_handler(stopEngine_handler)
+dispatcher.add_handler(startEngine_handler)
+dispatcher.add_handler(stopEngine_handler)
 dispatcher.add_handler(status_handler)
 dispatcher.add_handler(unknown_handler)
 updater.start_polling()

@@ -1,5 +1,4 @@
 import json
-import traceback
 import hmac
 import hashlib
 import time
@@ -15,11 +14,12 @@ API_SECRET = "APISecret"
 def create_pair(crypto, base):
     return crypto + "_" + base
 
-def amount_format(value):
-    return '{0:f}'.format(Decimal(str(value)))
-
-def getRatio(currentValue, minValue, maxValue):
+def get_ratio(currentValue, minValue, maxValue):
+    #Calculate the relative value of currentValue between min and max, where the output if current = min is 1 and if current = max is 0
     return Decimal(1 - ((Decimal(currentValue)-Decimal(minValue))/(Decimal(maxValue)-Decimal(minValue))))
+
+def get_settings():
+    return get_json_data(SETTINGS_FILE)
 
 def get_json_data(filename):
     with open(filename) as keys:
@@ -66,6 +66,6 @@ def query(method, params={}):
     
     return requests.post(BASE_URI + method, json=req, headers={'Content-Type':'application/json'})
 
-def publicquery(method, params={}):
+def public_query(method, params={}):
     paramsList = urllib.parse.urlencode(params)
     return requests.get(BASE_URI + method + "?" + paramsList)
