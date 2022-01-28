@@ -187,12 +187,10 @@ def create_buy_order(crypto, base, buy_factor):
     smallest_increment = Decimal(instrument["min_quantity"])
     #Calculate the order price for the currency pair
     price = get_bid_price(crypto, base)
-    print("Current bid price is: "+ str(price))
     #Calculate the quantity that can be bought for the pair, considering the buy_factor and the minimum amount
     quantity = calculate_buy_quantity(crypto, base, price, buy_factor, smallest_increment)
-    print("Expected buy quantity is: "+ str(quantity))
     #If the quantity is more than the minimum, the order can be placed
-    text = "Quantity is lower than smallest increment " + str(smallest_increment)
+    text = "Quantity " + str(quantity) + " is lower than smallest increment " + str(smallest_increment)
     if(quantity >= smallest_increment):
         text = "Placing buy order with price " + str(price) + " and quantity " + str(quantity)
         params["price"] = float(price)
@@ -353,10 +351,10 @@ def execute_trading_engine():
                 #wait the time interval passes before attempting another order
                 time.sleep(order_time_interval/2)
                 #if the order is still ACTIVE, let's cancel it and check if at least partially filled (checking on the while loop, if there's new available quantity)
-                if is_buy_open_order(crypto, base):
+                if order_id and is_buy_open_order(crypto, base):
                     cancel_order(crypto, base, order_id)
                     time.sleep(1)
-                else:
+                elif order_id:
                     print("Order " + str(order_id) + " filled")
             #get buy trades since time snapshot got earlier 
             trades = get_buy_trades(crypto, base, current_time)

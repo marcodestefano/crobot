@@ -7,17 +7,19 @@ BOT_TOKEN_KEY = 'TelegramBotToken'
 BOT_USERS_KEY = "Users"
 
 def isAuthorized(update):
-    return update.effective_user.username in users
+    return update.effective_user.username in get_users()
 
-def genericHandler(update, context, function, client=None, settings=None):
+def get_users():
+    credentials = get_settings()
+    users = credentials[BOT_USERS_KEY]
+    return users
+
+def genericHandler(update, context, function):
     if(isAuthorized(update)):
-        if client and settings:
-            output = function(client, settings)
-        elif client:
-            output = function(client)
-        else:
-            output = function()
+        output = function()
         context.bot.send_message(chat_id=update.effective_chat.id, text=output)
+    else:
+        print(function.__name__ + " command requested by " + update.effective_user.username)
 
 def get_start_message():
     return "Welcome to crobot! Use /help to retrieve the command list"
@@ -28,8 +30,8 @@ def get_help_message():
         "/orders to display your open orders\n" \
         "/balance to print your current balance\n" \
         "/status to check the trading engine status\n" \
-        "/startEngine to start the trading engine\n" \
-        "/stopEngine to stop the trading engine\n"
+        "/startengine to start the trading engine\n" \
+        "/stopengine to stop the trading engine\n"
 
 def get_unknown_message():
     return "Sorry, I didn't understand that command."
@@ -64,8 +66,6 @@ def unknown(update, context):
 
 credentials = get_settings()
 tokenData = credentials[BOT_TOKEN_KEY]
-users = credentials[BOT_USERS_KEY]
-print("Authorized users are: " + str(users))
 updater = Updater(token=tokenData)
 dispatcher = updater.dispatcher
 start_handler = CommandHandler('start', start)
@@ -73,8 +73,8 @@ displayCommand_handler = CommandHandler('help', displayHelp)
 displayWallet_handler = CommandHandler('wallet', displayWallet)
 displayOrders_handler = CommandHandler('orders', displayOrders)
 displayBalance_handler = CommandHandler('balance', displayBalance)
-startEngine_handler = CommandHandler('startEngine', startEngine)
-stopEngine_handler = CommandHandler('stopEngine', stopEngine)
+startEngine_handler = CommandHandler('startengine', startEngine)
+stopEngine_handler = CommandHandler('stopengine', stopEngine)
 status_handler = CommandHandler('status', status)
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(start_handler)
