@@ -190,7 +190,7 @@ def create_buy_order(crypto, base, buy_factor):
     #Calculate the quantity that can be bought for the pair, considering the buy_factor and the minimum amount
     quantity = calculate_buy_quantity(crypto, base, price, buy_factor, smallest_increment)
     #If the quantity is more than the minimum, the order can be placed
-    text = "Quantity " + str(quantity) + " is lower than smallest increment " + str(smallest_increment)
+    text = "Quantity " + str(quantity) + " is lower than smallest increment " + str(smallest_increment) + " - " + time.strftime("%H:%M:%S", time.localtime())
     if(quantity >= smallest_increment):
         text = "Placing buy order with price " + str(price) + " and quantity " + str(quantity)
         params["price"] = float(price)
