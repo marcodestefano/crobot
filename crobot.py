@@ -306,9 +306,10 @@ def start_trading_engine():
         TRADING_ENGINE_ACTIVE = 1
         tradingEngineThread = threading.Thread(target = execute_trading_engine)
         tradingEngineThread.start()
-        result = "Trading engine correctly started."
+        result = "Trading engine correctly started"
     else:
-        result =  "Trading engine is already running."
+        result =  "Trading engine is already running"
+    print(result)
     return result
 
 def stop_trading_engine():
@@ -316,16 +317,17 @@ def stop_trading_engine():
     global TRADING_ENGINE_ACTIVE
     if TRADING_ENGINE_ACTIVE:
         TRADING_ENGINE_ACTIVE = 0
-        result = "Trading engine stopped."
+        result = "Trading engine stopped"
     else:
-        result = "Trading engine already stopped."
+        result = "Trading engine already stopped"
+    print(result)
     return result
 
 def get_trading_engine_status_text():
     result = ""
     global TRADING_ENGINE_ACTIVE
     if TRADING_ENGINE_ACTIVE:
-        result = "Trading engine is running."
+        result = "Trading engine is running"
     else:
         result = "Trading engine is not running"
     return result
