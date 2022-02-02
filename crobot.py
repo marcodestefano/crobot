@@ -375,6 +375,7 @@ def execute_trading_engine():
                 create_sell_orders(crypto, base, bought_quantity, traded_price, fee_percentage, sell_price_strategy)
                 time.sleep(order_time_interval/2)
     except Exception:
+        stop_trading_engine()
         print("Error in the execution of the engine: " + str(traceback.print_exc()))
         start_trading_engine()
     return
