@@ -190,7 +190,7 @@ def create_buy_order(crypto, base, buy_factor):
     #Calculate the quantity that can be bought for the pair, considering the buy_factor and the minimum amount
     quantity = calculate_buy_quantity(crypto, base, price, buy_factor, smallest_increment)
     #If the quantity is more than the minimum, the order can be placed
-    text = "Quantity " + str(quantity) + " is lower than smallest increment " + str(smallest_increment) + " - " + time.strftime("%H:%M:%S", time.localtime())
+    text = "Quantity " + str(quantity) + " is lower than smallest increment " + str(smallest_increment)
     if(quantity >= smallest_increment):
         text = "Placing buy order with price " + str(price) + " and quantity " + str(quantity)
         params["price"] = float(price)
@@ -199,7 +199,7 @@ def create_buy_order(crypto, base, buy_factor):
         json_result = json.loads(result.text)
         if json_result and json_result["result"]:
             order_id = json_result["result"]["order_id"]
-    print(text)
+    print(time.strftime("%Y-%m-%d %H:%M:%S") + " " + text)
     return order_id
 
 def create_sell_orders(crypto, base, bought_quantity, traded_price, fee_percentage, sell_price_strategy):
@@ -234,7 +234,7 @@ def create_sell_orders(crypto, base, bought_quantity, traded_price, fee_percenta
         }
         if(quantity >= smallest_increment):
             params["order_list"].append(param_item)
-            print("Selling " + str(quantity) + " " + crypto + " @ " + str(price) + " " + base)
+            print(time.strftime("%Y-%m-%d %H:%M:%S") + " Selling " + str(quantity) + " " + crypto + " @ " + str(price) + " " + base)
             total_selling_quantity = total_selling_quantity + quantity
     result = query(method, params)
     json_result = json.loads(result.text)
@@ -258,7 +258,7 @@ def create_sell_orders(crypto, base, bought_quantity, traded_price, fee_percenta
             "quantity": float(remaining_available_quantity),
             "time_in_force": "GOOD_TILL_CANCEL"
         }
-        print("Selling " + str(remaining_available_quantity) + " " + crypto + " dust @ " + str(price) + " " + base)
+        print(time.strftime("%Y-%m-%d %H:%M:%S") + " Selling " + str(remaining_available_quantity) + " " + crypto + " dust @ " + str(price) + " " + base)
     result = query(method, params)
     json_result.update(json.loads(result.text))
     return json_result
@@ -269,7 +269,7 @@ def cancel_order(crypto,base,order_id):
         "instrument_name": create_pair(crypto,base),
         "order_id": order_id
     }
-    print("Canceling order " + str(order_id))
+    print(time.strftime("%Y-%m-%d %H:%M:%S") + " Canceling order " + str(order_id))
     result = query(method,params)
     return json.loads(result.text)
 
@@ -357,7 +357,7 @@ def execute_trading_engine():
                     cancel_order(crypto, base, order_id)
                     time.sleep(1)
                 elif order_id:
-                    print("Order " + str(order_id) + " filled")
+                    print(time.strftime("%Y-%m-%d %H:%M:%S") + " Order " + str(order_id) + " filled")
             #get buy trades since time snapshot got earlier 
             trades = get_buy_trades(crypto, base, current_time)
             if trades:
@@ -376,6 +376,6 @@ def execute_trading_engine():
                 time.sleep(order_time_interval/2)
     except Exception:
         stop_trading_engine()
-        print("Error in the execution of the engine: " + str(traceback.print_exc()))
+        print(time.strftime("%Y-%m-%d %H:%M:%S") + " Error in the execution of the engine: " + str(traceback.print_exc()))
         start_trading_engine()
     return
